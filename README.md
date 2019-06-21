@@ -27,7 +27,7 @@ Running
 -------
 
 ```
-python -m boostnote_dump <boostnote notes directory> <output directory>
+python boostnote_dump.py <boostnote notes directory> <output directory>
 ```
 
 The output directory and parents will be created if needed.

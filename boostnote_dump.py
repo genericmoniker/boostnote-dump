@@ -7,10 +7,10 @@ import textwrap
 import cson
 
 attach_re = re.compile(r'\(:storage[\\\/][a-f0-9-]+[\\\/](.+)\)')
-
+note_re = re.compile(r'\(:note:(.+)\)')
 
 def usage():
-    print('python -m boostnote-dump <boostnote notes dir> <output dir>')
+    print('python boostnote-dump.py <boostnote notes dir> <output dir>')
 
 
 def main():
@@ -77,8 +77,19 @@ def metadata(doc, folders):
 
 
 def content(doc):
-    return attach_re.sub(r'(@attachment/\1)', doc['content'])
+    c = doc['content']
+    c = attach_re.sub(r'(@attachment/\1)', c)
+    c = note_re.sub(note_link_replacement, c)
+    return c
 
+
+def note_link_replacement(match):
+    title = 'not found'
+    file = Path(sys.argv[1]) / 'notes' / (match.group(1) + '.cson')
+    if file.is_file():
+        doc = cson.loads(file.read_text(encoding='utf-8'))
+        title = doc['title']
+    return f'(@note/{filename_from_title(title)})'
 
 def filename_from_title(title):
     keepcharacters = (' ', '.', '_')
